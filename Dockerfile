@@ -1,20 +1,15 @@
-# Use an official Node.js runtime as the base image
-FROM node:18
+# Use the base image with Android emulator pre-installed
+FROM budtmo/docker-android:emulator_9.0
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
+# Expose the port for the emulator
+EXPOSE 6080
 
-# Install git to clone the repository
-RUN apt-get update && apt-get install -y git
+# Set environment variables
+ENV EMULATOR_DEVICE="Samsung Galaxy S10"
+ENV WEB_VNC=true
 
-# Clone the GitHub repository
-RUN git clone https://github.com/Muhammadumair0/Voice-chat-room.git .
+# Configure the device permissions
+RUN apt-get update && apt-get install -y qemu-kvm
 
-# Install project dependencies
-RUN npm install
-
-# Expose the port your application uses (adjust if necessary)
-EXPOSE 3000
-
-# Command to run both npm run dev and npm run server
-CMD ["sh", "-c", "npm run dev & npm run server"]
+# Command to run the emulator
+CMD ["sh", "-c", "emulator -avd ${EMULATOR_DEVICE} -no-audio -no-boot-anim -gpu swiftshader_indirect -verbose -port 6080"]
